@@ -38,7 +38,8 @@ var myGameArea = {
 		<!-- this.interval = setInterval(updateGameArea, 20); -->
 		this.canvas.addEventListener('mousemove', function (e) {
 			[box.x, box.y] = [e.pageX, e.pageY];
-			[box2.x, box2.y] = sym(line.x, box.x, box.y);
+			[cx, cy] = sym(line.x, box.cx(), box.cy());
+			box2.set_c(cx, cy);
 			if (check_in_zone(box2.o(), box3.o())) {
 				document.getElementById("win").textContent="Bravo!";
 			}
@@ -58,6 +59,12 @@ function component(width, height, color, x, y) {
 	this.height = height;
 	this.x = x;
 	this.y = y;    
+	this.cx = function(){ return this.x + width/2};
+	this.cy = function(){ return this.y + height/2};
+	this.set_c = function(cx, cy) {
+		this.x = cx - width/2;
+		this.y = cy - height/2;
+	};
 	this.update = function() {
 		ctx = myGameArea.context;
 		ctx.fillStyle = color;
