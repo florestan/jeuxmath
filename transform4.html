@@ -18,7 +18,7 @@ canvas {
 
 		myGameArea.canvas.addEventListener('mousemove', function (e) {
 			line.x = e.pageX;
-			[cx, cy] = sym(line.x, box.cx(), box.cy());
+			[cx, cy] = line.sym( box.cx(), box.cy());
 			box2.set_c(cx, cy);
 			if (check_in_zone(box2.o(), box3.o())) {
 				document.getElementById("win").textContent="Bravo!";
@@ -50,8 +50,8 @@ function updateGameArea() {
 	line.update();
 	box3.update();
 	joinline.update();
-	box.update();
 	box2.update();
+	box.update();
 }
 		</script>
 

@@ -23,10 +23,19 @@ function component(width, height, color, x, y) {
 function componentVertLine(width, color, x) {
 	this.width = width;
 	this.x = x;
+	this.color = color;
 	this.update = function() {
 		ctx = myGameArea.context;
-		ctx.fillStyle = color;
+		ctx.fillStyle = this.color;
 		ctx.fillRect(this.x, 0, this.width, myGameArea.canvas.height);
+	};
+	this.o = function () {
+		return {'x':this.x, 'y':0, 'w':this.width, 'h':myGameArea.canvas.height}
+		;
+	};
+	this.sym = function (x, y) {
+		sym_x = x + 2*(this.x-x);
+		return [sym_x, y];
 	}
 }
 
@@ -42,11 +51,6 @@ function joinLine(height, color, b1, b2) {
 	}
 }
 
-function sym(w, x, y) {
-	sym_x = x + 2*(w-x);
-	return [sym_x, y];
-}
-
 function middle(o) {
 	x = o.x + o.h/2;
 	y = o.y + o.w/2;
@@ -60,6 +64,22 @@ function check_in_zone(o, zone) {
 		&&(zone.y+zone.h >= o.y+o.h )	
 	;
 	return is_in;
+}
+function check_point_in_zone(x, y, zone) {
+	is_in = (zone.x <= x )
+		&&(zone.y <= y )	
+		&&(zone.x+zone.w >= x)	
+		&&(zone.y+zone.h >= y)	
+	;
+	return is_in;
+} 
+
+function getMousePos(evt) {
+	var rect = myGameArea.canvas.getBoundingClientRect();
+	return [
+	evt.clientX - rect.left,
+	evt.clientY - rect.top
+	];
 }
 
 var myGameArea = {
