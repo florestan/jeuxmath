@@ -1,86 +1,92 @@
 <!DOCTYPE html>
 <html>
-<style>
+	<style>
 canvas {
-    border:1px solid #d3d3d3;
-    background-color: #f1f1f1;
+	border:1px solid #d3d3d3;
+	background-color: #f1f1f1;
 }
 #win {
 	font-size:30px;
 	color:red;
 }
-</style>
-<head>
-</head>
-<body onload="startGame()">
-<script>
+	</style>
+	<head>
+	</head>
+	<body onload="startGame()">
+		<script>
 
-var myGamePiece;
+			var myGamePiece;
 
 function startGame() {
-    line = new componentVertLine(5, "blue", 400);
-    box = new component(30, 30, "red", 10, 100);
-    box2 = new component(30, 30, "blue", 800-40, 100);
-    zone = {'x':800-100, 'y':200, 'w':50, 'h':50};
-    box3 = new component(zone.w, zone.h, "gray", zone.x, zone.y);
-    myGameArea.start();
+	line = new componentVertLine(5, "blue", 400);
+	box = new component(30, 30, "red", 10, 100);
+	box2 = new component(30, 30, "blue", 800-40, 100);
+	zone = {'x':800-100, 'y':200, 'w':50, 'h':50};
+	box3 = new component(zone.w, zone.h, "gray", zone.x, zone.y);
+	myGameArea.start();
+	updateGameArea();
 }
 
 var myGameArea = {
-    canvas : document.createElement("canvas"),
-    start : function() {
-        this.canvas.width = 800;
-        this.canvas.height = 500;
-        this.canvas.style.cursor = "none"; //hide the original cursor
-        this.context = this.canvas.getContext("2d");
-        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        <!-- this.interval = setInterval(updateGameArea, 20); -->
-        window.addEventListener('mousemove', function (e) {
-		[box.x, box.y] = [e.pageX, e.pageY];
-		updateGameArea()
-		
-        })
-        window.addEventListener('mousedown', function (e) {
-            myGameArea.box_x = e.pageX;
-            myGameArea.box_y = e.pageY;
-	    [box2.x, box2.y] = sym(line.x, box.x, box.y);
-	    if (check_in_zone(box2.o(), box3.o())) {
-		    document.getElementById("win").textContent="Bravo!";
-	    }
-	    else {
-		    document.getElementById("win").textContent="pas bravo...";
-	    };
-	    updateGameArea()
-        })
-    }, 
-    clear : function(){
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
+	canvas : document.createElement("canvas"),
+	start : function() {
+		this.canvas.width = 800;
+		this.canvas.height = 500;
+		this.canvas.style.cursor = "none"; //hide the original cursor
+		this.context = this.canvas.getContext("2d");
+		document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+		<!-- this.interval = setInterval(updateGameArea, 20); -->
+		this.canvas.addEventListener('mousemove', function (e) {
+			[box.x, box.y] = [e.pageX, e.pageY];
+			updateGameArea()
+
+		})
+		this.canvas.addEventListener('click', function (e) {
+			[cx, cy] = sym(line.x, box.cx(), box.cy());
+			box2.set_c(cx, cy)
+			if (check_in_zone(box2.o(), box3.o())) {
+				document.getElementById("win").textContent="Bravo!";
+			}
+			else {
+				document.getElementById("win").textContent="pas bravo...";
+			};
+			updateGameArea()
+		})
+	}, 
+	clear : function(){
+		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	}
 }
 function component(width, height, color, x, y) {
-    this.width = width;
-    this.height = height;
-    this.x = x;
-    this.y = y;    
-    this.update = function() {
-        ctx = myGameArea.context;
-        ctx.fillStyle = color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-    }
-    this.o = function () {
-	   return {'x':this.x, 'y':this.y, 'w':this.width, 'h':this.height}
-	   ;
-    }
+	this.width = width;
+	this.height = height;
+	this.x = x;
+	this.y = y;    
+	this.cx = function(){ return this.x + width/2};
+	this.cy = function(){ return this.y + height/2};
+	this.set_c = function(cx, cy) {
+		this.x = cx - width/2;
+		this.y = cy - height/2;
+	};
+	this.update = function() {
+		ctx = myGameArea.context;
+		ctx.fillStyle = color;
+		ctx.fillRect(this.x, this.y, this.width, this.height);
+	}
+	this.o = function () {
+		return {'x':this.x, 'y':this.y, 'w':this.width, 'h':this.height}
+		;
+	}
 }
 
 function componentVertLine(width, color, x) {
-    this.width = width;
-    this.x = x;
-    this.update = function() {
-        ctx = myGameArea.context;
-        ctx.fillStyle = color;
-        ctx.fillRect(this.x, 0, this.width, myGameArea.canvas.height);
-    }
+	this.width = width;
+	this.x = x;
+	this.update = function() {
+		ctx = myGameArea.context;
+		ctx.fillStyle = color;
+		ctx.fillRect(this.x, 0, this.width, myGameArea.canvas.height);
+	}
 }
 
 function sym(w, x, y) {
@@ -90,25 +96,25 @@ function sym(w, x, y) {
 
 function check_in_zone(o, zone) {
 	is_in = (zone.x <= o.x )
-           &&(zone.y <= o.y )	
-	   &&(zone.x+zone.w >= o.x+o.w )	
-	   &&(zone.y+zone.h >= o.y+o.h )	
+		&&(zone.y <= o.y )	
+		&&(zone.x+zone.w >= o.x+o.w )	
+		&&(zone.y+zone.h >= o.y+o.h )	
 	;
 	return is_in;
 }
 
 
 function updateGameArea() {
-    myGameArea.clear();
-    line.update();
-    box.update();
-    box3.update();
-    box2.update();
+	myGameArea.clear();
+	line.update();
+	box.update();
+	box3.update();
+	box2.update();
 }
-</script>
+		</script>
 
-<p>Mettre le truc bleu dans la zone grise !</p>
-<p id="win"></p>
+		<p>Mettre le truc bleu dans la zone grise !</p>
+		<p id="win"></p>
 
-</body>
+	</body>
 </html>

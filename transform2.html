@@ -36,7 +36,7 @@ var myGameArea = {
 		this.context = this.canvas.getContext("2d");
 		document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 		<!-- this.interval = setInterval(updateGameArea, 20); -->
-		window.addEventListener('mousemove', function (e) {
+		this.canvas.addEventListener('mousemove', function (e) {
 			[box.x, box.y] = [e.pageX, e.pageY];
 			[box2.x, box2.y] = sym(line.x, box.x, box.y);
 			if (check_in_zone(box2.o(), box3.o())) {
