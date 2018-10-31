@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<style>
+canvas {
+	border:1px solid #d3d3d3;
+	background-color: #f1f1f1;
+}
+#win {
+	font-size:30px;
+	color:red;
+}
+	</style>
+	<head>
+	</head>
+	<body onload="startGame()">
+		<script type="text/javascript" src="transform.js"></script>
+		<script>
+
+		myGameArea.canvas.addEventListener('mousemove', function (e) {
+			line.x = e.pageX;
+			[cx, cy] = sym(line.x, box.cx(), box.cy());
+			box2.set_c(cx, cy);
+			if (check_in_zone(box2.o(), box3.o())) {
+				document.getElementById("win").textContent="Bravo!";
+			}
+			else {
+				document.getElementById("win").textContent="pas bravo...";
+			};
+			updateGameArea()
+
+		});
+
+function startGame() {
+	initx = 10;
+	inity = 210;
+
+	line = new componentVertLine(5, "black", 400);
+	box = new component(30, 30, "red", initx, inity);
+	box2 = new component(30, 30, "blue", initx, inity);
+	joinline = new joinLine(5, "green", box, box2);
+	zone = {'x':800-100, 'y':200, 'w':50, 'h':50};
+	box3 = new component(zone.w, zone.h, "gray", zone.x, zone.y);
+	myGameArea.start();
+	updateGameArea();
+}
+
+
+function updateGameArea() {
+	myGameArea.clear();
+	line.update();
+	box3.update();
+	joinline.update();
+	box.update();
+	box2.update();
+}
+		</script>
+
+		<p>Mettre le truc bleu dans la zone grise !
+		<button type="button" onclick="location.reload()">Recomencer</button>
+		</p>
+		<p id="win"></p>
+
+	</body>
+</html>
