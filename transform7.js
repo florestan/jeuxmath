@@ -39,7 +39,7 @@ myGameArea.canvas.addEventListener('mousemove', function (e) {
 	};
 	if (debug){
 	document.getElementById("pos")
-		.textContent=x+","+y+" "+line2.dist(x,y);
+		.textContent=x+","+y+" ";
 	};
 	updateGameArea()
 
@@ -49,8 +49,8 @@ function startGame() {
 	line2 = new componentLine(10, "purple",
 		300, 300, 1, -1);
 
-	box = new component(30, 30, "blue", 10, 210);
-	zone = {'x':555, 'y':355, 'w':50, 'h':50};
+	box = new component(30, 30, "blue", 150, 210);
+	zone = {'x':410, 'y':350, 'w':50, 'h':50};
 
 	box3 = new component(zone.w, zone.h, "gray", zone.x,
 		zone.y);
