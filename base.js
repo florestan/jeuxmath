@@ -1,3 +1,6 @@
+can_width = 800;
+can_height = 500;
+
 function component(width, height, color, x, y) {
 	this.width = width;
 	this.height = height;
@@ -30,12 +33,12 @@ function componentVertLine(width, color, x) {
 	this.update = function() {
 		ctx = myGameArea.context;
 		ctx.fillStyle = this.color;
-		ctx.fillRect(this.x, 0, this.width,
-			myGameArea.canvas.height);
+		ctx.fillRect(this.x-this.width/2, 0, this.width,
+			can_height);
 	};
 	this.o = function () {
 		return {'x':this.x, 'y':0, 'w':this.width,
-			'h':myGameArea.canvas.height}
+			'h':can_height}
 		;
 	};
 	this.sym = function (x, y) {
@@ -52,7 +55,7 @@ function componentHorLine(width, color, y) {
 	this.update = function() {
 		ctx = myGameArea.context;
 		ctx.fillStyle = this.color;
-		ctx.fillRect(0, this.y,
+		ctx.fillRect(0, this.y-this.width/2,
 			myGameArea.canvas.width,
 			this.width);
 	};
@@ -65,6 +68,76 @@ function componentHorLine(width, color, y) {
 	this.sym = function (x, y) {
 		sym_y = y + 2*(this.y-y);
 		return [x, sym_y];
+	}
+}
+function componentLine(width, color, x, y, a,b) {
+	// x, y -> un point de la droite
+	// a,b -> un vecteur directeur
+	this.width = width;
+	this.y = y;
+	this.x = x;
+	this.a = a;
+	this.b = b;
+	this.x_start =
+		x + (0-y)*(a/b);
+	this.x_finish =
+		x + (can_height-y)*(a/b);
+	this.original_color = color;
+	this.color = color;
+	this.update = function() {
+		ctx = myGameArea.context;
+		ctx.fillStyle = this.color;
+		ctx.beginPath();
+		ctx.moveTo(this.x_start, 0);
+		ctx.lineTo(this.x_finish,
+			can_height
+		);
+		ctx.lineTo(this.x_finish+this.width,
+			can_height
+		);
+		ctx.lineTo(this.x_start+width, 0);
+		ctx.lineTo(this.x_start, 0);
+		ctx.fill()
+	};
+	this.o = function () {
+		return {'x':0, 'y':this.y,
+			'w':myGameArea.canvas.width,
+			'h':this.width}
+		;
+	};
+	this.is_in = function (x, y) {
+		norm = (this.a)**2+(this.b)**2;
+		ps_temp = (x-this.x)*this.a + (y-this.y)*this.b;
+		ps = ps_temp/norm;
+		d = 
+			(this.x + ps*this.a - x)**2
+			+
+			(this.y + ps*this.b - y)**2
+		;
+		is_in = (d <= (this.width)**2)
+		;
+		return is_in
+	};
+	this.dist = function (x, y) {
+		norm = this.a**2+this.b**2;
+		ps_temp = (x-this.x)*this.a + (y-this.y)*this.b;
+		ps = ps_temp/norm;
+		d = 
+			(this.x + ps*this.a - x)**2
+			+
+			(this.y + ps*this.b - y)**2
+		;
+		is_in = (d <= this.width**2)
+		;
+		return d;
+	};
+	this.sym = function (x, y) {
+		norm = (this.a)**2+(this.b)**2;
+		ps_temp = (x-this.x)*this.a + (y-this.y)*this.b;
+		ps = ps_temp/norm;
+		sym_x = 2*(ps*this.a + this.x) - x;
+		sym_y = 2*(ps*this.b + this.y) - y;
+		return [sym_x, sym_y];
 	}
 }
 
@@ -116,8 +189,8 @@ function getMousePos(evt) {
 var myGameArea = {
 	canvas : document.createElement("canvas"),
 	start : function() {
-		this.canvas.width = 800;
-		this.canvas.height = 500;
+		this.canvas.width = can_width;
+		this.canvas.height = can_height;
 		this.canvas.style.cursor = "none";
 		this.context = this.canvas.getContext("2d");
 		document.body.insertBefore(this.canvas,
